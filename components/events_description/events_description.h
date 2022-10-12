@@ -1,6 +1,8 @@
 #ifndef __EVENTS_DESCRIPTION_H__
 #define __EVENTS_DESCRIPTION_H__
 
+/* NOTE: This file should be placed localy at the application level of the project */
+
 /*--------------------------------------------------------------
                       INCLUDES
 ---------------------------------------------------------------*/

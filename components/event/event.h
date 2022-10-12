@@ -29,6 +29,13 @@ typedef void (*MESSAGE_CALLBACK)(void *);
                       PUBLIC MACRO
 ---------------------------------------------------------------*/
 
+/**
+ * @brief Define an event in the subscriber component
+ * 
+ * @param EVENT The name of the event static variable (event handler)
+ * @param EVENT_ID Event code from the @ref event_codes_t list
+ * @param QUEUE_LENGTH Queue length. If 1, only the last event is delivered
+ */
 #define DECLARE_EVENT(EVENT, EVENT_ID, QUEUE_LENGTH) \
     static StaticQueue_t xStaticQueue##EVENT_ID; \
     static uint8_t ucQueueStorageArea##EVENT_ID[ QUEUE_LENGTH * sizeof( EVENT_DATA_##EVENT_ID ) ]; \

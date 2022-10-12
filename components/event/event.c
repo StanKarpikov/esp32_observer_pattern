@@ -49,6 +49,9 @@ void event_init(void)
     mutex = xSemaphoreCreateMutexStatic(&xMutexBuffer);
 }
 
+/**
+ * @brief Register a callback for an event in the subscriver thread, subscribe to an event
+*/
 int event_register(event_t * event, MESSAGE_CALLBACK callback)
 {
     assert(mutex);
@@ -79,6 +82,9 @@ int event_register(event_t * event, MESSAGE_CALLBACK callback)
     return -1;
 }
 
+/**
+ * @brief Check for new events in the subscriver thread
+*/
 int event_poll(event_t * event, TickType_t wait_ticks)
 {
     assert(mutex);
@@ -106,20 +112,31 @@ int event_poll(event_t * event, TickType_t wait_ticks)
     return -1;
 }
 
+/**
+ * @brief Publish an event from a publisher thread
+*/
 int event_publish(event_codes_t code, void* data, size_t data_size)
 {
     assert(mutex);
-    uint8_t data_pointer[data_size];
     if( xSemaphoreTake( mutex, portMAX_DELAY ) == pdTRUE )
     {
         for(int i=0; i<MAXIMUM_NUMBER_OF_SUBSCRIBERS; i++)
         {
             if(events_hub[code].xQueue[i] != 0)
             {
-                xQueueSend(
-                    events_hub[code].xQueue[i],
-                    data,
-                    portMAX_DELAY);
+                if(events_hub[code].queue_length[i] > 1)
+                {
+                    xQueueSend(
+                        events_hub[code].xQueue[i],
+                        data,
+                        portMAX_DELAY);
+                }
+                else
+                {
+                    xQueueOverwrite(
+                        events_hub[code].xQueue[i],
+                        data);
+                }
                 ESP_LOGI(TAG, "Event published for code %d (%s) for subscriber %d", code, events_code_str[code], i);
             }
         }

@@ -20,7 +20,7 @@ static const char *TAG = "component_b";
                       PRIVATE DATA
 ---------------------------------------------------------------*/
 
-DECLARE_EVENT(component_notify_message_evt, COMPONENT_NOTIFY_MESSAGE, 10)
+DECLARE_EVENT(component_notify_message_evt, COMPONENT_NOTIFY_MESSAGE, 1)
 
 /*--------------------------------------------------------------
                       PRIVATE FUNCTIONS
