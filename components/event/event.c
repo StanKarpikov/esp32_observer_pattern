@@ -89,26 +89,19 @@ int event_poll(event_t * event, TickType_t wait_ticks)
 {
     assert(mutex);
     uint8_t data_pointer[event->item_size];
-    if( xSemaphoreTake( mutex, portMAX_DELAY ) == pdTRUE )
+
+    if( xQueueReceive( events_hub[event->code].xQueue[event->registered_id],
+                    data_pointer,
+                    wait_ticks) == pdPASS )
     {
-        if( xQueueReceive( events_hub[event->code].xQueue[event->registered_id],
-                        data_pointer,
-                        wait_ticks) == pdPASS )
+        ESP_LOGI(TAG, "Event received for code %d (%s)", event->code, events_code_str[event->code]);
+        if(events_hub[event->code].callbacks[event->registered_id])
         {
-            ESP_LOGI(TAG, "Event received for code %d (%s)", event->code, events_code_str[event->code]);
-            if(events_hub[event->code].callbacks[event->registered_id])
-            {
-                events_hub[event->code].callbacks[event->registered_id](data_pointer);
-            }
-            xSemaphoreGive( mutex );
-            return 0;
+            events_hub[event->code].callbacks[event->registered_id](data_pointer);
         }
-        xSemaphoreGive( mutex );
+        return 0;
     }
-    else
-    {
-        ESP_LOGE(TAG, "Mutex error");
-    }
+
     return -1;
 }
 
@@ -129,7 +122,7 @@ int event_publish(event_codes_t code, void* data, size_t data_size)
                     xQueueSend(
                         events_hub[code].xQueue[i],
                         data,
-                        portMAX_DELAY);
+                        0);
                 }
                 else
                 {
