@@ -1,0 +1,5 @@
+﻿build
+sdkconfig.old
+.vscode
+unpacked_esp32_spiffs
+input_partitions.csv
